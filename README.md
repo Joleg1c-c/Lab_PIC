@@ -1,3 +1,3 @@
 # Lab_PIC
 
-![image](https://github.com/Joleg1c-c/Lab_PIC/assets/115467358/eea73258-692a-4051-a407-be50442d60bd)
+![image](https://github.com/Joleg1c-c/Lab_PIC/assets/115467358/d2a2b635-406d-4ac4-888b-265ab9a7491e)
