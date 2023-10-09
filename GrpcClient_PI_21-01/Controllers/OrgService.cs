@@ -87,5 +87,41 @@ namespace GrpcClient_PI_21_01.Controllers
             }
             return orgs;
         }
+
+        public static async Task<Organization> GetOrganization(int orgId)
+        {
+            using var channel = GrpcChannel.ForAddress("https://localhost:7275");
+            var client = new DataRetriever.DataRetrieverClient(channel);
+            var org = await client.GetOrganizationAsync(new IdRequest() { Id = orgId});
+            return org.FromReply();
+        }
+
+        public static async Task<bool> RemoveOrganization(int orgId)
+        {
+            using var channel = GrpcChannel.ForAddress("https://localhost:7275");
+            var client = new DataRetriever.DataRetrieverClient(channel);
+            var response = await client.RemoveOrganizationAsync(new IdRequest() { Id = orgId });
+            return response.Successful;
+        }
+
+        public static async Task<bool> AddOrganization(Organization org)
+        {
+            org.idOrg = -1;
+            var reply = org.ToReply();
+            using var channel = GrpcChannel.ForAddress("https://localhost:7275");
+            var client = new DataRetriever.DataRetrieverClient(channel);
+            var response = await client.AddOrganizationAsync(reply);
+            org.idOrg = response.ModifiedId ?? -1;
+            return response.Successful;
+        }
+
+        public static async Task<bool> UpdateOrganization(Organization org)
+        {
+            var reply = org.ToReply();
+            using var channel = GrpcChannel.ForAddress("https://localhost:7275");
+            var client = new DataRetriever.DataRetrieverClient(channel);
+            var response = await client.UpdateOrganizationAsync(reply);
+            return response.Successful;
+        }
     }
 }

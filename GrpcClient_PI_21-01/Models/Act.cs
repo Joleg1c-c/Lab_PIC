@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace GrpcClient_PI_21_01
 {
-    class Act
+    public class Act
     {
         public int ActNumber { get; set; }
         public int CountDogs { get; set; }
@@ -32,5 +32,13 @@ namespace GrpcClient_PI_21_01
             Contracts = contracts;
         }
 
+        public static Act Empty = new(-1, 0, 0,
+                        new Organization(-1, "", "", "", "", "", ""),
+                        DateTime.MinValue, "",
+                        new App(DateTime.MinValue, -1, "", "", "", "", "", ""),
+                        new Contract(-1, DateTime.MinValue, DateTime.MinValue,
+                        new Location(-1, ""), 0,
+                        new Organization(-1, "", "", "", "", "", ""),
+                        new Organization(-1, "", "", "", "", "", "")));
     }
 }

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace GrpcClient_PI_21_01.Models
 {
-    class AnimalCard
+    public class AnimalCard
     {
         public int IdAnimalCard { set; get; }
         public string Category { get; set; }
@@ -22,11 +22,11 @@ namespace GrpcClient_PI_21_01.Models
         public string IdentificationLabel { get; set; }
         public Location Locality { get; set; }
         public Act ActCapture { get; set; }
-        public Bitmap Sad { get; set; }
+        public Bitmap? Sad { get; set; }
 
     public AnimalCard(int idAnimalCard, string category, string gender,
         string breed, int size, string furType, string color, string ears, string tail,
-        string spicialSigns, string identificationLabel, Location locality, Act actCapture, Bitmap sad)
+        string spicialSigns, string identificationLabel, Location locality, Act actCapture, Bitmap? sad)
         {
             IdAnimalCard = idAnimalCard;
             Category = category;

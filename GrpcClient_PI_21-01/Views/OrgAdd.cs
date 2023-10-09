@@ -20,25 +20,29 @@ namespace GrpcClient_PI_21_01.Views
         {
             InitializeComponent();
             this.FormBorderStyle = FormBorderStyle.FixedSingle;
-            MessageBox.Show("Currently not working"); // remove later
-            this.Close(); // remove later
-            name.Items.Clear();
-            //foreach (Organization org in OrgRepository.Organizations)
-            //{
-            //    name.Items.Add(org.name);
-            //}
-
-            AdressReg.Items.Clear();
-            //foreach (Location loc in LocationCostReposiroty.locationCosts)
-            //{
-            //    AdressReg.Items.Add(loc.City);
-            //}
+            Task.Run(InitFormAsync);
         }
 
-        private void OKorgAdd_Click(object sender, EventArgs e)
+        private async void InitFormAsync()
         {
-            //var org = new Organization(OrgRepository.Organizations.Max(x => x.idOrg) + 1, name.Text, INN.Text, KPP.Text, AdressReg.Text, Type.Text, Status.Text);
-            //OrgService.AddOrganization(org);
+            name.Items.Clear();
+            foreach (Organization org in await OrgService.GetOrganizations())
+            {
+                name.Items.Add(org.name);
+            }
+
+            AdressReg.Items.Clear();
+            foreach (Location loc in await LocationService.GetLocations())
+            {
+                AdressReg.Items.Add(loc.City);
+            }
+        }
+
+        private async void OKorgAdd_Click(object sender, EventArgs e)
+        {
+            var org = new Organization(-1, name.Text, INN.Text,
+                KPP.Text, AdressReg.Text, Type.Text, Status.Text);
+            await OrgService.AddOrganization(org);
             this.Close();
         }
 

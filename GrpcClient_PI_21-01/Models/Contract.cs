@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace GrpcClient_PI_21_01.Models
 {
-    class Contract
+    public class Contract
     {
         public int IdContract { get; set; }
         public DateTime DateConclusion { get; set; }

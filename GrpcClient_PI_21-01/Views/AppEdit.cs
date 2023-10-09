@@ -22,35 +22,35 @@ namespace GrpcClient_PI_21_01.Views
         {
             InitializeComponent();
             this.FormBorderStyle = FormBorderStyle.FixedSingle;
-            MessageBox.Show("Currently not working"); // remove later
-            this.Close(); // remove later
         }
-        private string AppNum;
-        public AppEdit(string num)
+        private readonly int appNum = -1;
+        public AppEdit(int num)
         {
             InitializeComponent();
-            AppNum = num;
+            appNum = num;
             FillAppEdit();
-            MessageBox.Show("Currently not working"); // remove later
-            this.Close(); // remove later
         }
-        private void FillAppEdit()
+        private async void FillAppEdit()
         {
-            //var NumAppId = AppRepository.Applicatiions.FindIndex(x => x.number == Convert.ToInt32(AppNum));
+            //var NumAppId = AppRepository.Applicatiions.FindIndex(x => x.number == Convert.ToInt32(appNum));
             //App app = AppRepository.Applicatiions[NumAppId];
-            //date.Text = app.date.ToString();
-            //loc.Text = app.locality;
-            //territory.Text = app.territory;
-            //animalHabbiat.Text = app.animalHabiat;
-            //urgency.Text = app.urgencyOfExecution;
-            //descrip.Text = app.animaldescription;
-            //categoryApp.Text = app.applicantCategory;
+
+            var app = await AppService.GetApplication(appNum);
+            date.Text = app.date.ToString();
+            loc.Text = app.locality;
+            territory.Text = app.territory;
+            animalHabbiat.Text = app.animalHabiat;
+            urgency.Text = app.urgencyOfExecution;
+            descrip.Text = app.animaldescription;
+            categoryApp.Text = app.applicantCategory;
         }
 
-        private void OkAppEdit_Click(object sender, EventArgs e)
+        private async void OkAppEdit_Click(object sender, EventArgs e)
         {
-            //var app = new App(DateTime.Parse(date.Text), Convert.ToInt32(AppNum), loc.Text, territory.Text, animalHabbiat.Text, urgency.Text, descrip.Text, categoryApp.Text);
-            //AppService.EditApplication(app);
+            var app = new App(DateTime.Parse(date.Text), appNum,
+                loc.Text, territory.Text, animalHabbiat.Text, urgency.Text,
+                descrip.Text, categoryApp.Text);
+            await AppService.UpdateApplication(app);
             this.Close();
         }
 

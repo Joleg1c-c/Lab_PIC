@@ -1,10 +1,7 @@
 ﻿//using GrpcClient_PI_21_01.Data;
 using GrpcClient_PI_21_01.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Grpc.Net.Client;
+using Grpc.Core;
 
 namespace GrpcClient_PI_21_01.Controllers
 {
@@ -22,5 +19,30 @@ namespace GrpcClient_PI_21_01.Controllers
 
         //    AnimalRepository.AddAnimalCard(otpAnimalCard);
         //}
+
+        public static async Task<bool> AddAnimalCard(AnimalCard animalCard)
+        {
+            animalCard.IdAnimalCard = -1;
+            var reply = animalCard.ToReply();
+            using var channel = GrpcChannel.ForAddress("https://localhost:7275");
+            var client = new DataRetriever.DataRetrieverClient(channel);
+            var response = await client.AddAnimalCardAsync(reply);
+            animalCard.IdAnimalCard = response.ModifiedId ?? -1;
+            return response.Successful;
+        }
+
+        public static async Task<List<AnimalCard>> GetAnimalCards()
+        {
+            using var channel = GrpcChannel.ForAddress("https://localhost:7275");
+            var client = new DataRetriever.DataRetrieverClient(channel);
+            var serverData = client.GetAnimalCards(new Google.Protobuf.WellKnownTypes.Empty());
+            var responseStream = serverData.ResponseStream;
+            var animalCards = new List<AnimalCard>();
+            await foreach (var response in responseStream.ReadAllAsync())
+            {
+                animalCards.Add(response.FromReply());
+            }
+            return animalCards;
+        }
     }
 }

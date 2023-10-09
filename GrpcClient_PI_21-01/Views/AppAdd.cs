@@ -19,14 +19,15 @@ namespace GrpcClient_PI_21_01.Views
         {
             InitializeComponent();
             this.FormBorderStyle = FormBorderStyle.FixedSingle;
-            MessageBox.Show("Currently not working"); // remove later
-            this.Close(); // remove later
         }
 
-        private void OkAppAdd_Click(object sender, EventArgs e)
+        private async void OkAppAdd_Click(object sender, EventArgs e)
         {
-            //var app = new App(DateTime.Parse(date.Text), AppRepository.Applicatiions.Max(x => x.number) + 1, loc.Text, territory.Text, animalHabbiat.Text, urgency.Text, descrip.Text, categoryApp.Text);
-            //AppService.AddApplication(app);
+            var app = new App(DateTime.Parse(date.Text),
+                -1,
+                loc.Text, territory.Text, animalHabbiat.Text, urgency.Text,
+                descrip.Text, categoryApp.Text);
+            await AppService.AddApplication(app);
             this.Close();
         }
 

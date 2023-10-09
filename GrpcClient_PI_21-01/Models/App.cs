@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace GrpcClient_PI_21_01.Models
 {
-    internal class App
+    public class App
     {
         public DateTime date { get; set; }
         public int number { get; set; }

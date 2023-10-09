@@ -22,8 +22,8 @@ namespace GrpcClient_PI_21_01
             this.FormBorderStyle = FormBorderStyle.FixedSingle;
             Task.Run(Setup);
         }
-        DataSet dsApplication = new DataSet();
-        DataSet dsOrganization = new DataSet();
+        readonly DataSet dsApplication = new();
+        readonly DataSet dsOrganization = new();
 
         private async Task Setup()
         {
@@ -44,7 +44,7 @@ namespace GrpcClient_PI_21_01
             && c.DateConclusion <= dateTimePicker1.Value).Select(c => ContractService.ToDataArray(c)))
                 ContractTable.Rows.Add(i);
         }
-        private async Task<bool> CheckPrivilege(NameMdels model)
+        private static async Task<bool> CheckPrivilege(NameMdels model)
         {
             if (!await PreveligeService.IsUserPrevilegedFor(model))
             {
@@ -72,7 +72,7 @@ namespace GrpcClient_PI_21_01
         {
             if (await CheckPrivilege(NameMdels.Act)) 
             {
-                ActEdit editWindow = new ActEdit();
+                var editWindow = new ActEdit();
                 editWindow.ShowDialog();
                 await SetDataGridAct();
             }
@@ -83,21 +83,20 @@ namespace GrpcClient_PI_21_01
             if (await CheckPrivilege(NameMdels.Act))
                 if (DataGridViewActs.CurrentRow != null)
                 {
-                    ActEdit editWindow = new ActEdit(int.Parse(DataGridViewActs.CurrentRow.Cells[0].Value.ToString()));
+                    var editWindow = new ActEdit(int.Parse(DataGridViewActs.CurrentRow.Cells[0].Value.ToString()));
                     editWindow.ShowDialog();
                     await SetDataGridAct();
                 }
         }
 
-        private void DeleteActButton_Click(object sender, EventArgs e)
+        private async void DeleteActButton_Click(object sender, EventArgs e)
         {
-            MessageBox.Show("Currently not working");
-            //if (CheckPrivilege(NameMdels.Act))
-            //    if (DataGridViewActs.CurrentRow != null)
-            //    {
-            //        ActService.DeleteAct(int.Parse(DataGridViewActs.CurrentRow.Cells[0].Value.ToString()));
-            //        SetDataGridAct();
-            //    }
+            if (await CheckPrivilege(NameMdels.Act))
+                if (DataGridViewActs.CurrentRow != null)
+                {
+                    await ActService.RemoveAct(int.Parse(DataGridViewActs.CurrentRow.Cells[0].Value.ToString()));
+                    await SetDataGridAct();
+                }
         }
 
         private async void buttonAnimalCard_Click(object sender, EventArgs e)
@@ -105,17 +104,17 @@ namespace GrpcClient_PI_21_01
             if (await CheckPrivilege(NameMdels.Act))
                 if (DataGridViewActs.CurrentRow != null)
                 {
-                    bool IsDog = int.Parse(DataGridViewActs.CurrentRow.Cells[1].Value.ToString()) > 0 ? true : false;
-                    bool IsCat = int.Parse(DataGridViewActs.CurrentRow.Cells[2].Value.ToString()) > 0 ? true : false;
+                    bool IsDog = int.Parse(DataGridViewActs.CurrentRow.Cells[1].Value.ToString()) > 0;
+                    bool IsCat = int.Parse(DataGridViewActs.CurrentRow.Cells[2].Value.ToString()) > 0;
 
                     if (IsDog)
                     {
-                        AnimalCardForm otvet = new AnimalCardForm(int.Parse(DataGridViewActs.CurrentRow.Cells[0].Value.ToString()), "Собака");
+                        var otvet = new AnimalCardForm(int.Parse(DataGridViewActs.CurrentRow.Cells[0].Value.ToString()), "Собака");
                         otvet.ShowDialog();
                     }
                     if (IsCat)
                     {
-                        AnimalCardForm otvet = new AnimalCardForm(int.Parse(DataGridViewActs.CurrentRow.Cells[0].Value.ToString()), "Кот");
+                        var otvet = new AnimalCardForm(int.Parse(DataGridViewActs.CurrentRow.Cells[0].Value.ToString()), "Кот");
                         otvet.ShowDialog();
                     }
                 }
@@ -169,41 +168,38 @@ namespace GrpcClient_PI_21_01
         }
 
         /*------------------------------------------------------------------*/
-        private void AppDelete_Click(object sender, EventArgs e)
+        private async void AppDelete_Click(object sender, EventArgs e)
         {
-            MessageBox.Show("Currently not working");
-            //if (CheckPrivilege(NameMdels.App))
-            //    if (dataGridViewApp.CurrentRow != null)
-            //    {
-            //        int app = Convert.ToInt32(dataGridViewApp.CurrentRow.Cells[1].Value.ToString());
-            //        AppService.DeleteApplication(app);
-            //        await SetDataGridApp();
-            //    }
+            if (await CheckPrivilege(NameMdels.App))
+                if (dataGridViewApp.CurrentRow != null)
+                {
+                    int app = Convert.ToInt32(dataGridViewApp.CurrentRow.Cells[1].Value.ToString());
+                    await AppService.RemoveApplication(app);
+                    await SetDataGridApp();
+                }
         }
 
-        private void AppEdit_Click(object sender, EventArgs e)
+        private async void AppEdit_Click(object sender, EventArgs e)
         {
-            MessageBox.Show("Currently not working");
-            //if (CheckPrivilege(NameMdels.App))
-            //    if (dataGridViewApp.CurrentRow != null)
-            //    {
-            //        string app = dataGridViewApp.CurrentRow.Cells[1].Value.ToString();
-            //        AppEdit appEdit = new AppEdit(app);
-            //        appEdit.ShowDialog();
-            //        await SetDataGridApp();
-            //    }
+            if (await CheckPrivilege(NameMdels.App))
+                if (dataGridViewApp.CurrentRow != null)
+                {
+                    var appId = int.Parse(dataGridViewApp.CurrentRow.Cells[1].Value.ToString());
+                    var appEdit = new AppEdit(appId);
+                    appEdit.ShowDialog();
+                    await SetDataGridApp();
+                }
         }
 
-        private void OrgDelete_Click(object sender, EventArgs e)
+        private async void OrgDelete_Click(object sender, EventArgs e)
         {
-            MessageBox.Show("Currently not working");
-            //if (CheckPrivilege(NameMdels.Org))
-            //    if (dataGridViewOrg.CurrentRow != null)
-            //    {
-            //        string org = dataGridViewOrg.CurrentRow.Cells[2].Value.ToString();
-            //        OrgService.DeleteOrganization(org);
-            //        await SetDataGridOrg();
-            //    }
+            if (await CheckPrivilege(NameMdels.Org))
+                if (dataGridViewOrg.CurrentRow != null)
+                {
+                    var org = int.Parse(dataGridViewOrg.CurrentRow.Cells[2].Value.ToString());
+                    await OrgService.RemoveOrganization(org);
+                    await SetDataGridOrg();
+                }
         }
 
         private async void OrgEdit_Click(object sender, EventArgs e)
@@ -211,8 +207,8 @@ namespace GrpcClient_PI_21_01
             if (await CheckPrivilege(NameMdels.Org))
                 if (dataGridViewOrg.CurrentRow != null)
                 {
-                    string org = dataGridViewOrg.CurrentRow.Cells[0].Value.ToString();
-                    OrgEdit orgEdit = new OrgEdit(org);
+                    var org = int.Parse(dataGridViewOrg.CurrentRow.Cells[0].Value.ToString());
+                    var orgEdit = new OrgEdit(org);
                     orgEdit.ShowDialog();
                     await SetDataGridOrg();
                 }
@@ -222,7 +218,7 @@ namespace GrpcClient_PI_21_01
         {
             if (await CheckPrivilege(NameMdels.Org))
             {
-                OrgAdd orgAdd = new OrgAdd();
+                var orgAdd = new OrgAdd();
                 orgAdd.ShowDialog();
                 await SetDataGridOrg();
             }
@@ -232,7 +228,7 @@ namespace GrpcClient_PI_21_01
         {
             if (await CheckPrivilege(NameMdels.App))
             {
-                AppAdd appAdd = new AppAdd();
+                var appAdd = new AppAdd();
                 appAdd.ShowDialog();
                 await SetDataGridApp();
             }
@@ -253,7 +249,7 @@ namespace GrpcClient_PI_21_01
         {
             if (await CheckPrivilege(NameMdels.Contract))
             {
-                AddContractForm contAdd = new AddContractForm();
+                var contAdd = new AddContractForm();
                 contAdd.ShowDialog();
                 await ShowContract();
             }
@@ -264,21 +260,20 @@ namespace GrpcClient_PI_21_01
             if (await CheckPrivilege(NameMdels.Contract))
                 if (ContractTable.CurrentRow != null)
                 {
-                    AddContractForm contAdd = new AddContractForm(int.Parse(ContractTable.CurrentRow.Cells[0].Value.ToString()));
+                    var contAdd = new AddContractForm(int.Parse(ContractTable.CurrentRow.Cells[0].Value.ToString()));
                     contAdd.ShowDialog();
                     await ShowContract();
                 }
         }
 
-        private void DeleteButton_Click(object sender, EventArgs e)
+        private async void DeleteButton_Click(object sender, EventArgs e)
         {
-            MessageBox.Show("Currently not working");
-            //if (CheckPrivilege(NameMdels.Contract))
-            //    if (ContractTable.CurrentRow != null)
-            //    {
-            //        ContractService.DeleteContract(ContractTable.CurrentRow.Cells[0].Value.ToString());
-            //        await ShowContract();
-            //    }
+            if (await CheckPrivilege(NameMdels.Contract))
+                if (ContractTable.CurrentRow != null)
+                {
+                    await ContractService.RemoveContract(int.Parse(ContractTable.CurrentRow.Cells[0].Value.ToString()));
+                    await ShowContract();
+                }
         }
 
         private async void dateTimePicker3_ValueChanged(object sender, EventArgs e)
@@ -288,29 +283,25 @@ namespace GrpcClient_PI_21_01
 
         private async void ContractTable_CellMouseDoubleClick(object sender, DataGridViewCellMouseEventArgs e)
         {
-            AddContractForm contAdd = new AddContractForm(int.Parse(ContractTable.CurrentRow.Cells[0].Value.ToString()));
+            var contAdd = new AddContractForm(int.Parse(ContractTable.CurrentRow.Cells[0].Value.ToString()));
             contAdd.ShowDialog();
             await ShowContract();
         }
 
-        private void filterAppDate_ValueChanged(object sender, EventArgs e)
+        private async void filterAppDate_ValueChanged(object sender, EventArgs e)
         {
-            MessageBox.Show("Currently not working");
-            //dsApplication.Tables[0].Rows.Clear();
-            //var apps = AppService.FilterByDate(filterAppDate.Value.ToString(), filterAppDate2.Value.ToString());
-            //foreach (var app in apps)
-            //    dsApplication.Tables[0].Rows.Add(app);
-            //dataGridViewApp.DataSource = dsApplication.Tables[0];
+            dsApplication.Tables[0].Rows.Clear();
+            var apps = (await AppService.GetApplications())
+                .Where(x => x.date >= filterAppDate.Value && x.date <= filterAppDate2.Value)
+                .Select(app => AppService.ToDataArray(app));
+            foreach (var app in apps)
+                dsApplication.Tables[0].Rows.Add(app);
+            dataGridViewApp.DataSource = dsApplication.Tables[0];
         }
 
         private void filterAppDate2_ValueChanged(object sender, EventArgs e)
         {
-            MessageBox.Show("Currently not working");
-            //dsApplication.Tables[0].Rows.Clear();
-            //var apps = AppService.FilterByDate(filterAppDate.Value.ToString(), filterAppDate2.Value.ToString());
-            //foreach (var app in apps)
-            //    dsApplication.Tables[0].Rows.Add(app);
-            //dataGridViewApp.DataSource = dsApplication.Tables[0];
+            filterAppDate_ValueChanged(sender, e);
         }
 
         private async void dateTimePicker1_ValueChanged(object sender, EventArgs e)
@@ -323,11 +314,11 @@ namespace GrpcClient_PI_21_01
             OpenReport();
         }
 
-        private async void OpenReport()
+        private static async void OpenReport()
         {
             if (await CheckPrivilege(NameMdels.Report))
             {
-                ReportForm rep = new ReportForm();
+                var rep = new ReportForm();
                 rep.ShowDialog();
             }
         }

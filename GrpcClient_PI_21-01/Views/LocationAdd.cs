@@ -20,19 +20,18 @@ namespace GrpcClient_PI_21_01.Views
         {
             InitializeComponent();
             this.FormBorderStyle = FormBorderStyle.FixedSingle;
-            MessageBox.Show("Currently not working"); // remove later
         }
 
-        private void OKcontAdd_Click(object sender, EventArgs e)
+        private async void OKcontAdd_Click(object sender, EventArgs e)
         {
-            //if (CityText.Text == "")
-            //    MessageBox.Show("Вы не указали город.", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            //else
-            //{
-            //    var loc = new Location(LocationCostReposiroty.locationCosts.Max(x => x.IdLocation) + 1, CityText.Text);
-            //    LocationCostReposiroty.locationCosts.Add(loc);
-            //    this.Close();
-            //}
+            if (CityText.Text == "")
+                MessageBox.Show("Вы не указали город.", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            else
+            {
+                var loc = new Location(-1, CityText.Text);
+                await LocationService.AddLocation(loc);
+                this.Close();
+            }
         }
 
         private void CancelcontEdit_Click(object sender, EventArgs e)

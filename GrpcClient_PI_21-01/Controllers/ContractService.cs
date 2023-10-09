@@ -45,7 +45,7 @@ namespace GrpcClient_PI_21_01.Controllers
 
         public static List<string[]> stringMassChencher(IEnumerable<Contract> contracts)
         {
-            List<string[]> result = new List<string[]>();
+            var result = new List<string[]>();
             foreach (Contract contract in contracts)
             {
                 var oldContract = new List<string>
@@ -93,5 +93,41 @@ namespace GrpcClient_PI_21_01.Controllers
             var contracts = await client.GetContractsAsync(new Google.Protobuf.WellKnownTypes.Empty());
             return contracts.Contracts.Select(cr => GetContractFromReply(cr));
         } 
+        
+        public static async Task<Contract> GetContract(int contrId)
+        {
+            using var channel = GrpcChannel.ForAddress("https://localhost:7275");
+            var client = new DataRetriever.DataRetrieverClient(channel);
+            var contr = await client.GetContractAsync(new IdRequest() { Id = contrId });
+            return contr.FromReply();
+        }
+
+        public static async Task<bool> RemoveContract(int contrId)
+        {
+            using var channel = GrpcChannel.ForAddress("https://localhost:7275");
+            var client = new DataRetriever.DataRetrieverClient(channel);
+            var response = await client.RemoveContractAsync(new IdRequest() { Id = contrId });
+            return response.Successful;
+        }
+
+        public static async Task<bool> AddContract(Contract contr)
+        {
+            contr.IdContract = -1;
+            var reply = contr.ToReply();
+            using var channel = GrpcChannel.ForAddress("https://localhost:7275");
+            var client = new DataRetriever.DataRetrieverClient(channel);
+            var response = await client.AddContractAsync(reply);
+            contr.IdContract = response.ModifiedId ?? -1;
+            return response.Successful;
+        }
+
+        public static async Task<bool> UpdateContract(Contract contr)
+        {
+            var reply = contr.ToReply();
+            using var channel = GrpcChannel.ForAddress("https://localhost:7275");
+            var client = new DataRetriever.DataRetrieverClient(channel);
+            var response = await client.UpdateContractAsync(reply);
+            return response.Successful;
+        }
     }
 }

@@ -43,26 +43,26 @@ namespace GrpcClient_PI_21_01
         //    ActRepository.Save(actData);
         //}
 
-        private static List<string[]> stringMassChencher(List<Act> acts)
-        {
-            List<string[]> result = new List<string[]>();
-            foreach (Act act in acts)
-            {
-                var oldAct = new List<string>
-                {
-                    act.ActNumber.ToString(),
-                    act.CountDogs.ToString(),
-                    act.CountCats.ToString(),
-                    act.Organization.name,
-                    act.Date.ToShortDateString(),
-                    act.TargetCapture,
-                    act.Application.number.ToString(),
-                    act.Contracts.IdContract.ToString()
-                };
-                result.Add(oldAct.ToArray());
-            }
-            return result;
-        }
+        //private static List<string[]> stringMassChencher(List<Act> acts)
+        //{
+        //    var result = new List<string[]>();
+        //    foreach (Act act in acts)
+        //    {
+        //        var oldAct = new List<string>
+        //        {
+        //            act.ActNumber.ToString(),
+        //            act.CountDogs.ToString(),
+        //            act.CountCats.ToString(),
+        //            act.Organization.name,
+        //            act.Date.ToShortDateString(),
+        //            act.TargetCapture,
+        //            act.Application.number.ToString(),
+        //            act.Contracts.IdContract.ToString()
+        //        };
+        //        result.Add(oldAct.ToArray());
+        //    }
+        //    return result;
+        //}
 
         public static string[] ToDataArray(Act act)
         {
@@ -104,6 +104,42 @@ namespace GrpcClient_PI_21_01
                 acts.Add(GetActFromReply(response));
             }
             return acts;
+        }
+
+        public static async Task<Act> GetAct(int id)
+        {
+            using var channel = GrpcChannel.ForAddress("https://localhost:7275");
+            var client = new DataRetriever.DataRetrieverClient(channel);
+            var actReply = await client.GetActAsync(new IdRequest() { Id = id });
+            return GetActFromReply(actReply);
+        }
+
+        public static async Task<bool> UpdateAct(Act updatedAct)
+        {
+            var reply = updatedAct.ToReply();
+            using var channel = GrpcChannel.ForAddress("https://localhost:7275");
+            var client = new DataRetriever.DataRetrieverClient(channel);
+            var response = await client.UpdateActAsync(reply);
+            return response.Successful;
+        }
+
+        public static async Task<bool> AddAct(Act newAct)
+        {
+            newAct.ActNumber = -1;
+            var reply = newAct.ToReply();
+            using var channel = GrpcChannel.ForAddress("https://localhost:7275");
+            var client = new DataRetriever.DataRetrieverClient(channel);
+            var response = await client.AddActAsync(reply);
+            newAct.ActNumber = response.ModifiedId ?? -1;
+            return response.Successful;
+        }
+
+        public static async Task<bool> RemoveAct(int actId)
+        {
+            using var channel = GrpcChannel.ForAddress("https://localhost:7275");
+            var client = new DataRetriever.DataRetrieverClient(channel);
+            var response = await client.RemoveActAsync(new IdRequest() { Id = actId });
+            return response.Successful;
         }
     }
 }
